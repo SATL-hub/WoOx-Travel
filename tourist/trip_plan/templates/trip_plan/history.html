@@ -1,0 +1,199 @@
+{% extends 'trip_plan/base.html' %}
+{% load static %}
+{% load math_filters %}
+
+{% block content %}
+<div class="reservation-form">
+  <div class="container">
+    <div class="row">
+
+      <style>
+        table {
+          border-collapse: collapse;
+          width: 100%;
+        }
+        th, td {
+          border: 1px solid #000;
+          padding: 8px;
+          text-align: center;
+        }
+        th {
+          background-color: #f2f2f2;
+        }
+        .pdf-content {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  visibility: hidden;
+  height: auto;
+  width: auto;
+}
+.blurred {
+    filter: blur(1px);
+    opacity: 6.6;
+    pointer-events: none;
+  }
+
+      </style>
+
+<table>
+  <tr>
+    <th>Destination</th>
+    <th>Check-in</th>
+    <th>No of Guests</th>
+    <th>Total Amount</th>
+    <th>Paid Amount</th>
+    <th>Status</th>
+    <th>Detail</th>
+    <th>PDF</th>
+    <th>Feedback</th>
+  </tr>
+
+  {% for i in confirms %}
+  <tr >
+    <td class="{% if i.reservation.checkin < today %}blurred{% endif %}">{{ i.reservation.t_place }}</td>
+    <td class="{% if i.reservation.checkin < today %}blurred{% endif %}">{{ i.reservation.checkin }}</td>
+    <td class="{% if i.reservation.checkin < today %}blurred{% endif %}">{{ i.reservation.guest }}</td>
+    <td class="{% if i.reservation.checkin < today %}blurred{% endif %}">{{ i.reservation.total }}</td>
+    <td class="{% if i.reservation.checkin < today %}blurred{% endif %}">{{ i.paid_amount }}</td>
+    <td class="{% if i.reservation.checkin < today %}blurred{% endif %}">{{ i.status }}</td>
+    <td class="{% if i.reservation.checkin < today %}blurred{% endif %}"><a href="{% url 'reservation' i.reservation.t_place.place %}">More Details</a></td>
+    <td class="{% if i.reservation.checkin < today %}blurred{% endif %}"><a href="#" onclick="generatePDF('pdf-{{ forloop.counter }}')">Download PDF</a></td>
+    <td>
+      {% if i.reservation.checkin <= today %}
+      {% if i.reservation.feedback_given %}
+      <span style="opacity: 0.3; pointer-events: none;" title="Feedback already given">📝</span>
+
+      {% else %}
+     
+        <a href="{% url 'feedback' i.reservation.t_place.place %}">📝</a>
+      {% endif %}
+      {% else %}
+        <span style="color: gray;">⏳</span>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+      <!-- Hidden PDF content (placed outside the table) -->
+     
+      {% for i in confirms %}
+      <div id="pdf-{{ forloop.counter }}" class="pdf-content" style="
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        margin: 50px auto;
+        max-width: 740px;
+        padding: 50px;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        background: #fff;
+        /* box-shadow: 0 15px 30px rgba(0,0,0,0.05); */
+        color: #000;
+        line-height: 1.6;
+      ">
+      
+        <!-- Company Header -->
+        <div style="text-align: center; margin-bottom: 40px;">
+          <h1 style="color: #22b3c1; font-size: 40px; margin-bottom: 5px;">Woox Travels</h1>
+          <p style="font-size: 16px; color: #666;">Your Trusted Travel Partner Across India</p>
+          <div style="height: 4px; width: 70px; background-color: #22b3c1; margin: 20px auto;"></div>
+        </div>
+      
+        <!-- Greeting & User Info -->
+        <div style="margin-bottom: 30px;">
+          <p style="font-size: 18px;color: black;">Hello <strong>{{ i.user.first_name }}</strong>,</p>
+          <p style="color: black;">Thank you for choosing <strong>Woox Travels</strong>! Here is your reservation summary with us:</p>
+        </div>
+      
+        <!-- Reservation Details Table -->
+        <h2 style="font-size: 22px; color: #444; margin-bottom: 10px;">Reservation Details</h2>
+        <table style="width: 100%; border-collapse: collapse; font-size: 15px; margin-bottom: 25px;">
+          <thead>
+            <tr style="background-color: #f2fafd;">
+              <th style="padding: 14px; border: 1px solid #ccc; text-align: left;">Destination</th>
+              <th style="padding: 14px; border: 1px solid #ccc; text-align: left;">Check-in</th>
+              <th style="padding: 14px; border: 1px solid #ccc; text-align: left;">Guests</th>
+              <th style="padding: 14px; border: 1px solid #ccc; text-align: left;">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding: 14px; border: 1px solid #eee;">{{ i.reservation.t_place }}</td>
+              <td style="padding: 14px; border: 1px solid #eee;">{{ i.reservation.checkin }}</td>
+              <td style="padding: 14px; border: 1px solid #eee;">{{ i.reservation.guest }}</td>
+              <td style="padding: 14px; border: 1px solid #eee;">{{ i.status }}</td>
+            </tr>
+          </tbody>
+        </table>
+      
+        <!-- Pricing Details -->
+        <h2 style="font-size: 22px; color: #444; margin-bottom: 10px;">Payment Summary</h2>
+        <table style="width: 100%; border-collapse: collapse; font-size: 15px; margin-bottom: 30px;">
+          <thead>
+            <tr style="background-color: #f9f9f9;">
+              <th style="padding: 12px; border: 1px solid #ccc; text-align: left;">Total Amount</th>
+              <th style="padding: 12px; border: 1px solid #ccc; text-align: left;">Amount Paid</th>
+              <th style="padding: 12px; border: 1px solid #ccc; text-align: left;">Remaining</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding: 12px; border: 1px solid #eee;">₹{{ i.reservation.total }}</td>
+              <td style="padding: 12px; border: 1px solid #eee;">₹{{ i.paid_amount }}</td>
+              <td style="padding: 12px; border: 1px solid #eee;">₹{{ i.reservation.total|subtract:i.paid_amount }}</td>
+
+            
+                        </tr>
+          </tbody>
+        </table>
+      
+        <!-- Personalized Thank You -->
+        <div style="margin-top: 40px; text-align: center; font-size: 16px;">
+          <p style="margin-bottom: 10px;color: #000;">
+            We are excited to be a part of your journey to <strong>{{ i.reservation.t_place }}</strong>. Our team is committed to making your experience smooth and memorable.
+          </p>
+          <p style="font-style: italic; color: #000;">
+            “Travel is the only thing you buy that makes you richer.” – Woox Travels
+          </p>
+        </div>
+      
+        <!-- Footer -->
+        <hr style="margin: 50px 0; border-top: 1px solid #eee;">
+        <div style="text-align: center; font-size: 13px;">
+          <p style="color: #000;">This is an auto-generated reservation summary. For support, contact us at <strong>support@wooxtravels.com</strong></p>
+          <p style="color: #000;">Follow us on <strong>Instagram, Facebook, Twitter</strong> @WooxTravels</p>
+          {% load tz %}  {# or i18n or l10n will work too, but tz is simple #}
+          <p style="color: #000;">&copy; {% now "Y" %} Woox Travels. All Rights Reserved.</p>
+        </div>
+      
+      </div>
+      {% endfor %}
+      
+
+    </div>
+  </div>
+</div>
+
+<!-- html2pdf.js script -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+  function generatePDF(divId) {
+    const original = document.getElementById(divId);
+
+    // Clone the content so we don’t mess with the original DOM
+    const clone = original.cloneNode(true);
+    clone.style.visibility = 'visible';
+    clone.style.position = 'static';  // so it prints normally in PDF
+
+    // Add it temporarily to the body
+    document.body.appendChild(clone);
+
+    html2pdf().from(clone).save('booking.pdf').then(() => {
+      // Clean up after generating
+      document.body.removeChild(clone);
+    });
+  }
+</script>
+
+
+{% endblock %}

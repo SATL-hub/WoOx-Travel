@@ -1,0 +1,197 @@
+{% extends 'trip_plan/base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+ .payment-box {
+    background: #f8f9fa; /* Light grey background */
+    padding: 12px; /* Further reduced padding to decrease height */
+    border-radius: 12px;
+    border: 2px solid #007bff; /* Blue border */
+    text-align: center;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 100px; /* Moves the box slightly more downward */
+    margin-bottom: 100px;
+    width: 600px; /* Further increased width */
+    max-width: 100%; /* Keeps it responsive */
+}
+
+
+.payment-box h4 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #007bff; /* Blue title */
+}
+
+.payment-box p {
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+.payment-box .price {
+    color: #007bff; /* Green */
+    font-weight: bold;
+}
+
+.payment-box .gst {
+    color: #ffc107; /* Yellow */
+    font-weight: bold;
+}
+
+.payment-box .total-amount {
+    color: #dc3545; /* Red */
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.payment-box hr {
+    border-top: 1px solid #ddd;
+    margin: 10px 0;
+}
+
+.cart-box {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    border: 2px solid #22b3c1;
+    text-align: center;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 50px;
+    width: 820px;
+    /* max-width: 500px; */
+    margin-bottom: 100px;
+    margin-left: 10px;
+}
+
+.cart-box h4 {
+    color: #22b3c1;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.cart-box table {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.cart-box table th,
+.cart-box table td {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+.total-amount {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.cart-box .btn-primary {
+    background: #22b3c1;
+    color: #fff;
+    border-radius: 8px;
+    padding: 10px;
+    font-weight: bold;
+}
+
+
+</style>
+
+  <div class="second-page-heading">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <h4>Book Prefered Deal Here</h4>
+          <h2>Make Your Reservation</h2>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt uttersi labore et dolore magna aliqua is ipsum suspendisse ultrices gravida</p>
+          <div class="main-button"><a href="about.html">Discover More</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="more-info reservation-info">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 col-sm-6">
+          <div class="info-item">
+            <i class="fa fa-phone"></i>
+            <h4>Make a Phone Call</h4>
+            <a href="#">+123 456 789 (0)</a>
+          </div>
+        </div>
+        <div class="col-lg-4 col-sm-6">
+          <div class="info-item">
+            <i class="fa fa-envelope"></i>
+            <h4>Contact Us via Email</h4>
+            <a href="#">company@email.com</a>
+          </div>
+        </div>
+        <div class="col-lg-4 col-sm-6">
+          <div class="info-item">
+            <i class="fa fa-map-marker"></i>
+            <h4>Visit Our Offices</h4>
+            <a href="#">24th Street North Avenue London, UK</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6 offset-lg-3">
+    <div class="cart-box">
+        <h4> Your Booking Summary</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Destination</strong></td>
+                    <td>{{ t.t_place.name }}</td>
+                </tr>
+                <tr>
+                  <td><strong>Traveller</strong></td>
+                  <td>{{ t.name }}</td>
+              </tr>
+              <tr>
+                <td><strong>Number of Guests</strong></td>
+                <td>{{ t.guest }}</td>
+            </tr>
+                <tr>
+                    <td><strong>Price Per Person</strong></td>
+                    <td>Rs: {{ t.t_place.price_per }}</td>
+                </tr>
+               
+                <tr>
+                    <td><strong>GST (18%)</strong></td>
+                    <td>Rs: {{ t.gst_amount }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Total Amount</strong></td>
+                    <td class="total-amount">Rs: {{ t.total_amount }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <form id="payform" action="{% url 'confirm' t.id %}"  data-tid="{{ t.id }}" data-home-url="{% url 'home' %}" method="POST">
+          {% csrf_token %}
+          <p style="color: red;">Partial Payment should be paid Online</p>
+         
+        <button class="btn btn-primary w-100" type="submit">Proceed to Checkout</button>
+       
+        </form>
+    </div>
+</div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="{% static 'assets/js/checkout.js'%}" defer></script>
+  <script>
+    $(".option").click(function(){
+      $(".option").removeClass("active");
+      $(this).addClass("active"); 
+    });
+  </script>
+
+{% endblock %}
