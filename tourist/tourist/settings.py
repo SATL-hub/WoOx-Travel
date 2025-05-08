@@ -131,6 +131,8 @@ EMAIL_HOST_PASSWORD = 'thvi zxxm mcqz xieq'
 static_dir=os.path.join(BASE_DIR,'static')
 STATIC_URL = '/static/'
 STATICFILES_DIR=[static_dir]
+# settings.py
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_ROOT=os.path.join(BASE_DIR,'media')
 MEDIA_URL="/media/"
