@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'u@v_x(yhsbt)2cmpubk8-tmc8lmhlm$jbwpy&4(9vf=&j*2e%f'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['192.168.1.9', '127.0.0.1', '0.0.0.0','localhost','*']
 
@@ -127,12 +127,12 @@ EMAIL_HOST_PASSWORD = 'thvi zxxm mcqz xieq'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
+import os
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 static_dir=os.path.join(BASE_DIR,'static')
 STATIC_URL = '/static/'
 STATICFILES_DIR=[static_dir]
-# settings.py
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_ROOT=os.path.join(BASE_DIR,'media')
 MEDIA_URL="/media/"
